@@ -1,0 +1,57 @@
+const { joinVoiceChannel, VoiceConnectionStatus, getVoiceConnection } = require('@discordjs/voice');
+const { EmbedBuilder } = require('discord.js');
+
+class VoiceManager {
+    constructor() {
+        // Dùng Map để lưu trữ trạng thái kết nối của từng Server (Guild) nếu bot ở nhiều server
+        this.connections = new Map();
+    }
+
+    /**
+     * Kết nối bot vào một kênh thoại
+    @param {VoiceChannel} channel - Kênh thoại cần tham gia
+     */
+    connect(channel) {
+        const guildId = channel.guild.id;
+
+        const connection = joinVoiceChannel({
+            channelId: channel.id,
+            guildId: guildId,
+            adapterCreator: channel.guild.voiceAdapterCreator,
+            selfDeaf: true,
+            selfMute: false
+        });
+
+        // Lưu kết nối vào Map để quản lý
+        this.connections.set(guildId, connection);
+
+        // Lắng nghe sự kiện mất kết nối (bị kick)
+        connection.on(VoiceConnectionStatus.Disconnected, async () => {
+            console.log(`[Voice] Bot bị mất kết nối khỏi kênh: ${channel.name}. Đang thử kết nối lại...`);
+            
+            // Chờ 1 giây trước khi kết nối lại để tránh spam API
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Gọi lại chính hàm connect này để tự động join lại
+            this.connect(channel);
+        });
+
+        return connection;
+    }
+
+    /**
+     * Ngắt kết nối bot khỏi kênh thoại một cách chủ động
+     * @param {string} guildId - ID của Server
+     */
+    disconnect(guildId) {
+        const connection = getVoiceConnection(guildId);
+        if (connection) {
+            connection.destroy();
+            this.connections.delete(guildId);
+            return true;
+        }
+        return false;
+    }
+}
+
+module.exports = VoiceManager;

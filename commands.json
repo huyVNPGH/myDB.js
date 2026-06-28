@@ -1,0 +1,8 @@
+[
+  {
+    "options": [],
+    "name": "ping",
+    "description": "Kiểm tra bot còn sống không",
+    "type": 1
+  }
+]
