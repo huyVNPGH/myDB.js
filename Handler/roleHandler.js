@@ -45,7 +45,7 @@ module.exports = async function roleHandler(member) {
             welcomeChannel.send({embeds: [emp]}),
             member.roles.add(role),
         ]);
-        console.log(`Đã cấp role ${role.name} cho ${newMember}`),
+        console.log(`Đã cấp role ${role.name} cho ${newMember}`);
     } 
     catch (error) {
         console.error('Không thể cấp role:', error);
