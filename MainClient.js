@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -45,6 +45,10 @@ class MainClient extends Client {
         this.on('guildMemberAdd', async (member) => {
             await roleHandler(member);              // ← delegate ra ngoài
         });
+        
+        this.on('messageCreate', async(message) => {
+            await this.demoBeforeInUse(message);
+        })
     }
 
     loadCommands() {
@@ -91,6 +95,48 @@ class MainClient extends Client {
                 ? await interaction.followUp(msg)
                 : await interaction.reply(msg);
         }
+    }
+
+    async demoBeforeInUse(message) {
+        const PREFIX = '!';
+        if (message.author.bot || !message.content.startsWith(PREFIX)) return;
+
+        // 3. Tách lệnh (command) và các tham số (args) người dùng nhập vào
+        // Ví dụ người dùng gõ: !say hello world
+        // -> args = ['hello', 'world']
+        // -> command = 'say'
+        const args = message.content.slice(PREFIX.length).trim().split(/ +/);
+        const command = args.shift().toLowerCase();
+
+        // 4. Xử lý các lệnh cụ thể
+        // if (command === 'test') {
+        //     // Trả lời trực tiếp vào kênh chat
+        //     const serverName = message.guild.name;
+        //     const defaultAvatar = `https://cdn.discordapp.com/embed/avatars/${Number(message.guild.id) % 5}.png`;
+        //     const serverAvatar = message.guild.iconURL({dynamic: true, size: 1024}) ?? defaultAvatar;
+        //     const serverDescription = message.guild.description || "No description for this server";
+        //     const serverMembersCount = message.guild.memberCount;
+        //     const serverMembersOnlineCount = message.guild.members.cache.filter((m) => m.presence?.status !== 'offline' && !m.user.bot).size;
+        //     const serverCreateDate = message.guild.createdAt.toLocaleDateString('vi-VN', {day: '2-digit',month: '2-digit',year: 'numeric'});
+            
+        //     const newMember = message.author.username;
+        //     const emp = new EmbedBuilder()
+        //         .setColor(0x0099ff)
+        //         .setTitle(':loudspeaker::tada: Everyone welcome our new member! :loudspeaker::tada: ' + newMember)
+        //         .setAuthor({ name: serverName, iconURL: serverAvatar})
+        //         .setDescription(serverDescription)
+        //         .setThumbnail(serverAvatar)
+        //         .addFields(
+        //             { name: `Members:white_circle:: ${serverMembersCount} Online:green_circle:: ${serverMembersOnlineCount}`, value: `Est: ${serverCreateDate}` },
+        //             //{ name: '\u200B', value: '\u200B' },
+        //             //{ name: 'Inline field title', value: 'Some value here', inline: true },
+        //         )
+        //         .setImage('https://preview.redd.it/please-give-us-the-old-king-thumbs-up-sound-effect-the-new-v0-08kqgn4ad6511.png?auto=webp&s=e5d2593e728505a382222b58c209462d94faeb7f')
+        //         .setTimestamp()
+        //         .setFooter({ text: 'Thanks for joined our community!', iconURL: serverAvatar});
+
+        //     await message.channel.send({embeds: [emp]});
+        // }
     }
 
     start(token) {
