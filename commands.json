@@ -1,6 +1,12 @@
 [
   {
     "options": [],
+    "name": "hihihiha",
+    "description": "hihihiha",
+    "type": 1
+  },
+  {
+    "options": [],
     "name": "ping",
     "description": "Kiểm tra bot còn sống không",
     "type": 1

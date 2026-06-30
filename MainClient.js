@@ -3,7 +3,6 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 
-const roleManager = require('./Handler/roleHandler');
 const roleHandler = require('./Handler/roleHandler');
 
 class MainClient extends Client {
@@ -137,6 +136,7 @@ class MainClient extends Client {
 
         //     await message.channel.send({embeds: [emp]});
         // }
+        
     }
 
     start(token) {
